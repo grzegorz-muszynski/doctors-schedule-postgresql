@@ -1,14 +1,13 @@
-    // Importing the framework
+// Importing the framework
 const express = require('express');
 const app = express();
 
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-    // PostgreSQL
-const {Client} = require('pg');
+const {Client} = require('pg'); // PostgreSQL
 
-    // For Heroku version we must replace code above with the code below
+// For Heroku version we must replace code above with the code below
 const db = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -19,11 +18,11 @@ const db = new Client({
 db.connect();
 
 app.use(express.static('public'));
-    // The line below is crucial for sending req.body to the client side
+// The line below is crucial for sending req.body to the client side
 app.use(express.json({ limit: '1mb' }));
-    // Allows to use information coming from forms
+// Allows to use information coming from forms
 app.use(express.urlencoded({ extended: true }));
-    // dirname indicates the location of the file where code is executed - app.js
+// dirname indicates the location of the file where code is executed - app.js
 app.use('/css', express.static(__dirname + 'public/CSS'));
 app.use('/js', express.static(__dirname + 'public/js'));
 app.use('/img', express.static(__dirname + 'public/images'));
@@ -34,7 +33,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(cors());
 
-    // Renders the page
+// Renders the page
 app.get('/', (req, res) => {
         res.render('schedule');
 });
@@ -53,7 +52,7 @@ app.get('/getting', (req, res) => {
 });
 
 app.post('/posting', (req, res, next) => {
-        // Inserting into a database
+    // Inserting into a database
     const sql = 'INSERT INTO visits (name, surname, phone_number, SSN, day, time) VALUES ($1, $2, $3, $4, $5, $6)';
     db.query(sql, [
         req.body[0],
@@ -73,7 +72,7 @@ app.post('/posting', (req, res, next) => {
 });
 
 app.put('/change', (req, res, next) => {
-        // Updating a database
+    // Updating a database
     const sql = 'UPDATE visits SET name = $1, surname = $2, phone_number = $3, SSN = $4 WHERE day = $5 AND time = $6';
     db.query(sql, [
         req.body[0],
@@ -93,7 +92,7 @@ app.put('/change', (req, res, next) => {
 });
 
 app.delete('/day/:day/time/:time', (req, res) => {
-        // Deleting data inside of the database
+    // Deleting data inside of the database
     const sql = 'DELETE FROM visits WHERE day = $1 AND time = $2';
     db.query(sql, [
         req.params.day,
