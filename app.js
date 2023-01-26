@@ -18,7 +18,6 @@ const db = new Client({
 
 db.connect();
 
-app.use(cors());
 app.use(express.static('public'));
     // The line below is crucial for sending req.body to the client side
 app.use(express.json({ limit: '1mb' }));
@@ -33,6 +32,7 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.json());
+app.use(cors());
 
     // Renders the page
 app.get('/', (req, res) => {
