@@ -19,13 +19,29 @@ const leftArrow = document.getElementById('leftArrow');
 
 let currentSlot; // Slot which will be clicked as the last one, will be assigned to that variable
 
-    //  Function responsible for clearing out all inputs in the pop up window
+const getLastMondayDate = () => {
+    const date = new Date(); // Getting today's date
+    const daysDifference = date.getDay() - 1; // Getting days difference between today and the last monday
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    
+    let lastMondayDay = day - daysDifference;
+    let lastMondayString = `${year}, ${month}, ${lastMondayDay}`;
+    
+    return lastMondayString;
+}
+let mondayString = getLastMondayDate();
+let startingDateObject = new Date(mondayString); // Function given as parameter checks current date and returns a string with date of last Monday
+let lastMonday = new Date(mondayString); // This variable will be used for tracking date of monday of currently shown week schedule. At first rendering it shows a date of current week's monday
+
+// Function responsible for clearing out all inputs in the pop up window
 const clearAll = (inputsToClear) => {
     for (let d = 0; d < inputsToClear.length; d++) {
         inputsToClear[d].value = '';
     };
 }
-    // The function responsible for setting buttons back to default state
+// The function responsible for setting buttons back to default state
 const setDefaultButtons = () => {
     submitButton.removeAttribute('disabled');
     submitButton.style.backgroundColor = '#3da219';
@@ -37,7 +53,7 @@ const setDefaultButtons = () => {
     deleteButton.style.backgroundColor = '#A9A9A9';
 }
 
-    // Function taking a date object for created week's monday and returning an array of dates (as strings) for six days in that week
+// Function taking a date object for created week's monday and returning an array of dates (as strings) for six days in that week
 const datesForWeekCreator = (mondayDate) => {
     let mondayDayString = mondayDate.toLocaleDateString();
     let datesArray = [mondayDayString];
@@ -50,7 +66,7 @@ const datesForWeekCreator = (mondayDate) => {
     return datesArray;
 }
 
-    // After clicking on any arrow, there is rendered schedule with new batch of dates for a certain week
+// After clicking on any arrow, there is rendered schedule with new batch of dates for a certain week
 rightArrow.onclick = function () {
     lastMonday.setDate(lastMonday.getDate() + 7);
     invoker(hoursUS, lastMonday);
@@ -61,7 +77,7 @@ leftArrow.onclick = function() {
     invoker(hoursUS, lastMonday);
 }
 
-    // Function responsible for checking if there are already data cells in the schedule - if so, it deletes
+// Function responsible for checking if there are already data cells in the schedule - if so, it deletes
 const scheduleCleaner = () => {
     let anySlots = document.querySelector(".scheduleRow");
     if (!anySlots) return;
@@ -72,41 +88,41 @@ const scheduleCleaner = () => {
     });
 }
 
-    // The function takes the array with hours as the first argument and creates as many rows as the length of array is, fullfilling columns. As the second argument, the function takes object - the date of monday which schedule will involve
+// The function takes the array with hours as the first argument and creates as many rows as the length of array is, fullfilling columns. As the second argument, the function takes object - the date of monday which schedule will involve
 async function createSchedule (array, mondayForWeek) {
-        // Getting dates for days
+    // Getting dates for days
     let datesToImplement = datesForWeekCreator(mondayForWeek);
-        // Getting slots for fullfilling
+    // Getting slots for fullfilling
     let datesSlots = document.getElementsByClassName('dates');
-        // Fullfilling slots with dates
+    // Fullfilling slots with dates
     for (let q = 0; q < 6; q++) {
         datesSlots[q].innerHTML = datesToImplement[q];
     }
 
-        // Getting data from the database
+    // Getting data from the database
     const getResponse = await fetch(`${API_ENDPOINT}getting`, {
         method: 'GET'
     });
     let visitsFromDb = await getResponse.json();
 
-        // If there are already cells in the schedule - delete them and make space for a new group
+    // If there are already cells in the schedule - delete them and make space for a new group
     await scheduleCleaner();
 
-        // Generating cells for a certain week
+    // Generating cells for a certain week
     await array.forEach(time => {
-            // Creating rows
+        // Creating rows
         let row = document.createElement('tr');
         row.classList.add('scheduleRow');
-            // Creating cells with time
+        // Creating cells with time
         let timeSlot = document.createElement('td');
         timeSlot.classList.add('timeSlot', 'firstColumn');
-            // Joining elements
+        // Joining elements
         row.appendChild(timeSlot);
         schedule.appendChild(row);
 
         timeSlot.innerHTML = time;
 
-            // Creating empty slots for 6 days in the row
+        // Creating empty slots for 6 days in the row
         for (let i = 0; i < 6; i++) {
 
             let slot = document.createElement('td');
@@ -133,7 +149,7 @@ async function createSchedule (array, mondayForWeek) {
     });
 }
 
-    // Adding the listener which open the pop-up window after clicking on a slot
+// Adding the listener which open the pop-up window after clicking on a slot
 const booking = () => {
     let allSlots = document.getElementsByClassName('slot');
 
@@ -143,14 +159,14 @@ const booking = () => {
 
             currentSlot = event.target;
 
-                // Checking if clicked slot is booked. If so - get data from element's data set and display in pop up window. Disable submit button and unlock the rest
+            // Checking if clicked slot is booked. If so - get data from element's data set and display in pop up window. Disable submit button and unlock the rest
             if (currentSlot.style.backgroundColor !== 'red') return;
 
             document.getElementById('name').value = currentSlot.dataset.name;
             document.getElementById('surname').value = currentSlot.dataset.surname;
             document.getElementById('number').value = currentSlot.dataset.phone_number;
             document.getElementById('ssn').value = currentSlot.dataset.ssn;
-                // Allowing for changing and deleting and preventing submitting
+            // Allowing for changing and deleting and preventing submitting
             submitButton.setAttribute('disabled', '');
             submitButton.style.backgroundColor = '#A9A9A9';
 
@@ -163,30 +179,30 @@ const booking = () => {
     });
 }
 
-    // Hiding pop-up window
+// Hiding pop-up window
 document.getElementById('close').addEventListener('click', () => {
     document.getElementById('popUpBackground').style.display = 'none';
-        // Clearing all input fields after hiding pop up window
+    // Clearing all input fields after hiding pop up window
     clearAll(popUpInputs);
 
-        // Setting buttons back to normal
+    // Setting buttons back to normal
     if (submitButton.hasAttribute('disabled')  === false) return;
     setDefaultButtons();
 });
 
-    // POST
+// POST
 submitButton.addEventListener('click', async function(e) {
     e.preventDefault();
-        // FormData returns object with data from inputs
+    // FormData returns object with data from inputs
     let allInputs =  await new FormData(popUpForm);
     let inputsArray = [];
 
-        // .entries iterates through the object and returns short arrays (each consists only form name and value of an input)
+    // .entries iterates through the object and returns short arrays (each consists only form name and value of an input)
     for (let pair of allInputs.entries()) {
         inputsArray.push(pair[1]);
     }
 
-        // Day and time are pushed to inputsArray
+    // Day and time are pushed to inputsArray
     inputsArray.push(currentSlot.dataset.day);
     inputsArray.push(currentSlot.dataset.hours);
 
@@ -199,7 +215,7 @@ submitButton.addEventListener('click', async function(e) {
     });
 
     if (response.status === 201) {
-            // Instead of reloading page (which has been generating unpleasant flashes) and fetching data from the database each time, I've decided to implement dynamic marking using dataset attributes
+        // Instead of reloading page (which has been generating unpleasant flashes) and fetching data from the database each time, I've decided to implement dynamic marking using dataset attributes
         currentSlot.style.backgroundColor = 'red';
         currentSlot.style.paddingLeft = '10px';
         currentSlot.innerHTML = inputsArray[1];
@@ -214,7 +230,8 @@ submitButton.addEventListener('click', async function(e) {
 
     clearAll(popUpInputs);
 });
-    // PUT
+
+// PUT
 changeButton.addEventListener('click', async function(e) {
     e.preventDefault();
     let allInputsChange = await new FormData(popUpForm);
@@ -252,11 +269,11 @@ changeButton.addEventListener('click', async function(e) {
     clearAll(popUpInputs);
 });
 
-    // Adding submit listener adding a DELETE fetch to the pop up window
+// Adding submit listener adding a DELETE fetch to the pop up window
 deleteButton.addEventListener('click', async function(e) {
     e.preventDefault();
 
-        // Asigning date and time of slot which will be cleared
+    // Asigning date and time of slot which will be cleared
     let dayId = currentSlot.dataset.day;
     let timeId = currentSlot.dataset.hours;
 
@@ -281,7 +298,8 @@ deleteButton.addEventListener('click', async function(e) {
 
     clearAll(popUpInputs);
 });
-    // "booking" function must be invoked after creating schedule
+
+// "booking" function must be invoked after creating schedule
 const invoker = async (visitsIntervals, dateOfMonday) => {
     await createSchedule(visitsIntervals, dateOfMonday);
     await booking();
