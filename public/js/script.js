@@ -4,9 +4,6 @@ let hoursUS = ['8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM', '9:00 AM', '9:15 AM',
     // For Heroku version we must replace code above with the code below
 const API_ENDPOINT = "https://doctors-schedule-postgresql.herokuapp.com/";
 
-let startingDateObject = new Date("2022, 12, 12"); // I am going to add here the function which checks current date and looks for the last Monday in purpose of showing the current week
-let lastMonday = new Date("2022, 12, 12"); // This variable will be used for tracking date of monday of currently shown week schedule
-
 const popUpForm = document.getElementById('popUpForm');
 const submitButton = document.getElementById('submitBtn');
 const changeButton = document.getElementById('changeBtn');
