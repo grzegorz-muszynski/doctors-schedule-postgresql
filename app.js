@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
     // PostgreSQL
 const {Client} = require('pg');
@@ -17,6 +18,7 @@ const db = new Client({
 
 db.connect();
 
+app.use(cors());
 app.use(express.static('public'));
     // The line below is crucial for sending req.body to the client side
 app.use(express.json({ limit: '1mb' }));
