@@ -1,7 +1,7 @@
 let hoursUS = ['8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM', '9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM', '10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM', '11:15 AM', '11:30 AM', '11:45 AM', '12:00 PM', '12:15 PM', '12:30 PM', '12:45 PM', '1:00 PM', '1:15 PM', '1:30 PM', '1:45 PM', '2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM', '3:00 PM', '3:15 PM', '3:30 PM', '3:45 PM', '4:00 PM', '4:15 PM', '4:30 PM', '4:45 PM', '5:00 PM', '5:15 PM', '5:30 PM', '5:45 PM', '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM', '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM', '8:00 PM', '8:15 PM', '8:30 PM', '8:45 PM'];
 
 // const API_ENDPOINT = "http://127.0.0.1:4002/";
-    // For Heroku version we must replace code above with the code below
+    // For Heroku version we must replace code above with the one below
 const API_ENDPOINT = "https://doctors-schedule-postgresql.herokuapp.com/";
 
 const popUpForm = document.getElementById('popUpForm');
@@ -18,17 +18,17 @@ let currentSlot; // Slot which will be clicked as the last one, will be assigned
 
 const getLastMondayDate = () => {
     const date = new Date(); // Getting today's date
+    const mondayDate = new Date();
+
     const daysDifference = date.getDay() - 1; // Getting days difference between today and the last monday
-    let day = date.getDay();
-    let lastMondayDay = day - daysDifference;
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-    
-    let lastMondayString = `${year}, ${month}, ${lastMondayDay}`;
-    
+    mondayDate.setDate(date.getDate() - daysDifference); // Setting monday's date
+    let lastMondayString = mondayDate.toLocaleDateString();
+
     return lastMondayString;
 }
-let mondayString = getLastMondayDate();
+let mondayStringPolish = getLastMondayDate();
+let mondayString = new Date(mondayStringPolish.split('.').reverse().join('.')); // String with a date must be turned into US format to be correctly read 
+
 let startingDateObject = new Date(mondayString); // Function given as parameter checks current date and returns a string with date of last Monday
 let lastMonday = new Date(mondayString); // This variable will be used for tracking date of monday of currently shown week schedule. At first rendering it shows a date of current week's monday
 
