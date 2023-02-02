@@ -19,11 +19,11 @@ let currentSlot; // Slot which will be clicked as the last one, will be assigned
 const getLastMondayDate = () => {
     const date = new Date(); // Getting today's date
     const daysDifference = date.getDay() - 1; // Getting days difference between today and the last monday
-    let day = date.getDate();
+    let day = date.getDay();
+    let lastMondayDay = day - daysDifference;
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
     
-    let lastMondayDay = day - daysDifference;
     let lastMondayString = `${year}, ${month}, ${lastMondayDay}`;
     
     return lastMondayString;
